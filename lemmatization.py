@@ -142,8 +142,8 @@ def load_conllu_dataset(datafile, join, name, grams, lemma_split, modus, stemmin
                                 dataset.loc[counter] = [word_counter, split_string[1], gram[0], split_string[3], gram[1]]
                             counter = counter + 1
                         word_counter = word_counter + 1
-                    except Exception as e:
-                        print(e)
+                    except Exception:
+                        traceback.print_exc()
     else:
         for s in strings:
             if (s[0] != "#" and s.strip()):
@@ -340,7 +340,6 @@ def model_prediction(dataset, join, modus, dim, optim, loss, activation, name, l
     prediction_submitted = False
     prediction = ''
     current_id = 0
-    known_word_amount = 0
     accurate_answers = 0
     total_answers = 0
     Levenshteins = []
@@ -360,7 +359,7 @@ def model_prediction(dataset, join, modus, dim, optim, loss, activation, name, l
                 Levenshteins.append([row['LEMMA'].strip(), prediction, Levenshtein.distance(row['LEMMA'].strip(), prediction)])
                 try:
                     damerau_Levenshteins.append([row['LEMMA'].strip(), prediction, dameraulevenshtein(row['LEMMA'].strip(), predicted)])
-                except Exception as e:
+                except Exception:
                     traceback.print_exc()
                 try:
                     jaro_winkler = jw.get_jaro_distance(row['LEMMA'].strip(), predicted)
@@ -382,7 +381,7 @@ def model_prediction(dataset, join, modus, dim, optim, loss, activation, name, l
                     Levenshteins.append([row['LEMMA'].strip(), prediction, Levenshtein.distance(row['LEMMA'].strip(), prediction)])
                     try:
                         damerau_Levenshteins.append([row['LEMMA'].strip(), prediction, dameraulevenshtein(row['LEMMA'].strip(), predicted)])
-                    except Exception as e:
+                    except Exception:
                         traceback.print_exc()
                     try:
                         jaro_winkler = jw.get_jaro_distance(row['LEMMA'].strip(), predicted)
@@ -402,7 +401,7 @@ def model_prediction(dataset, join, modus, dim, optim, loss, activation, name, l
                     Levenshteins.append([row['LEMMA'].strip(), prediction, Levenshtein.distance(row['LEMMA'].strip(), prediction)])
                     try:
                         damerau_Levenshteins.append([row['LEMMA'].strip(), prediction, dameraulevenshtein(row['LEMMA'].strip(), predicted)])
-                    except Exception as e:
+                    except Exception:
                         traceback.print_exc()
                     try:
                         jaro_winkler = jw.get_jaro_distance(row['LEMMA'].strip(), predicted)
@@ -428,13 +427,12 @@ def model_prediction(dataset, join, modus, dim, optim, loss, activation, name, l
                         predicted = target_words[input_words.index(token)].strip()
                     except ValueError:
                         predicted = target_words[input_words.index(row['TOKEN'])].strip()
-                    known_word_amount = known_word_amount + 1
                     if (predicted == row['LEMMA'].strip()):
                         accurate_answers = accurate_answers + 1
                     Levenshteins.append([row['LEMMA'].strip(), prediction, Levenshtein.distance(row['LEMMA'].strip(), prediction)])
                     try:
                         damerau_Levenshteins.append([row['LEMMA'].strip(), prediction, dameraulevenshtein(row['LEMMA'].strip(), predicted)])
-                    except Exception as e:
+                    except:
                         traceback.print_exc()
                     try:
                         jaro_winkler = jw.get_jaro_distance(row['LEMMA'].strip(), predicted)
@@ -559,7 +557,7 @@ def model_prediction(dataset, join, modus, dim, optim, loss, activation, name, l
                                 Levenshteins.append([row['LEMMA'].strip(), pred, Levenshtein.distance(row['LEMMA'].strip(), pred)])
                                 try:
                                     damerau_Levenshteins.append([row['LEMMA'].strip(), pred, dameraulevenshtein(row['LEMMA'].strip(), pred)])
-                                except Exception as e:
+                                except Exception:
                                     traceback.print_exc()
                                 try:
                                     jaro_winkler = jw.get_jaro_distance(row['LEMMA'].strip(), pred)
@@ -577,8 +575,7 @@ def model_prediction(dataset, join, modus, dim, optim, loss, activation, name, l
             if (modus == 'prediction'):
                 with open(args.folder + '\\result.txt', 'a', encoding='utf-8') as out:
                     out.write(row['TOKEN'].strip() + ' ' + row['LEMMA'] + '\n')    
-    if (modus == 'accuracy'):        
-        print('Known words percentage: ' + str(known_word_amount/total_answers*100) + '%')
+    if (modus == 'accuracy'):
         print('Accuracy score: ' + str(accurate_answers/total_answers*100) + '%')
         error_datasets = []
         raw_levenshteins, cleared_levenshteins, errors_levenshteins = prepare_metrics(Levenshteins, 'Levenshtein distance')
@@ -590,15 +587,17 @@ def model_prediction(dataset, join, modus, dim, optim, loss, activation, name, l
             print('Raw average Damerau-Levenshtein distance: ' + str(sum(raw_damerau_levenshteins)/len(raw_damerau_levenshteins)))
             print('Normalized average Damerau-Levenshtein distance: ' + str(sum(cleared_damerau_levenshteins)/len(cleared_damerau_levenshteins)))
             error_datasets.append(errors_damerau_levenshteins)
-        except Exception as e:
-            traceback.print_exc()
+        except ZeroDivisionError:
+            cleared_damerau_levenshteins = [i for i in raw_damerau_levenshteins if i > 0]
+            print('Normalized average Damerau-Levenshtein distance: ' + str(sum(cleared_damerau_levenshteins)/len(cleared_damerau_levenshteins)))
         try:
             raw_jaro_winklers, cleared_jaro_winklers, errors_jaro_winklers = prepare_metrics(jaro_Winklers, 'Jaro-Winkler distance')
             print('Raw average Jaro-Winkler distance: ' + str(sum(raw_jaro_winklers)/len(raw_jaro_winklers)))
             print('Normalized average Jaro-Winkler distance: ' + str(sum(cleared_jaro_winklers)/len(cleared_jaro_winklers)))
             error_datasets.append(errors_jaro_winklers)
-        except Exception as e:
-            traceback.print_exc()
+        except ZeroDivisionError:
+            cleared_jaro_winklers = [i for i in raw_jaro_winklers if i > 0 and i < 1]
+            print('Normalized average Jaro-Winkler distance: ' + str(sum(cleared_jaro_winklers)/len(cleared_jaro_winklers)))
         errors = pd.concat(error_datasets)
         errors.to_csv(args.folder + '\\errors_' + name + '.csv', index = False, encoding='utf-8')
 
