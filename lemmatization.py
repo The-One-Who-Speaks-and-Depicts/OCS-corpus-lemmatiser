@@ -627,7 +627,7 @@ def main(args):
 
 if __name__ == '__main__':    
     parser = argparse.ArgumentParser()
-    parser.add_argument('--data', default=(os.path.dirname(os.path.realpath(__file__)) + "\\file.txt"))
+    parser.add_argument('--data')
     parser.add_argument('--folder', default=os.path.dirname(os.path.realpath(__file__)))
     parser.add_argument('--epochs', default='40')
     parser.add_argument('--batch', default='128')
