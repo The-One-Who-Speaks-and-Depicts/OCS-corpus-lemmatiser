@@ -427,6 +427,8 @@ def model_prediction(dataset, join, modus, dim, optim, loss, activation, name, l
                         predicted = target_words[input_words.index(token)].strip()
                     except ValueError:
                         predicted = target_words[input_words.index(row['TOKEN'])].strip()
+                    # to get baseline results, decomment the following line, and proceed to the following block
+                    # predicted = row['TOKEN'].strip()
                     if (predicted == row['LEMMA'].strip()):
                         accurate_answers = accurate_answers + 1
                     Levenshteins.append([row['LEMMA'].strip(), prediction, Levenshtein.distance(row['LEMMA'].strip(), prediction)])
@@ -490,7 +492,9 @@ def model_prediction(dataset, join, modus, dim, optim, loss, activation, name, l
                             
                               # update states
                               states_value = [h, c]
+                            # to get baseline results, make the following line a commentary, and comment out the line after the following, and similar line in the previous block
                             predicted = decoded_sentence.strip()
+                            #predicted = row['TOKEN'].strip() 
                             predictions.append(predicted)
                         if (modus == 'prediction'):
                             final_prediction = ''
