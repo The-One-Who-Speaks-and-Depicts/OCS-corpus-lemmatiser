@@ -112,12 +112,12 @@ def load_json_dataset(datafile, join):
     import json
     with open(datafile, encoding='utf-8') as f:
         d = json.load(f)
-    dataset = pd.DataFrame(columns=['WORD', 'POS', 'LEMMA'])
+    dataset = pd.DataFrame(columns=['ID', 'TOKEN', 'WORD', 'POS', 'LEMMA'])
     counter = 0
     for t in d["texts"]:
         for c in t["clauses"]:
             for r in c["realizations"]:
-                dataset.loc[counter] = [r["lexemeTwo"], r["realizationFields"][0]["PoS"][0]["name"], "UNK"]
+                dataset.loc[counter] = [counter, r["lexemeTwo"], r["lexemeTwo"], r["realizationFields"][0]["PoS"][0]["name"], "UNK"]
                 counter = counter + 1
     return dataset
 
@@ -346,13 +346,14 @@ def model_prediction(dataset, join, modus, dim, optim, loss, activation, name, l
     damerau_Levenshteins = []
     jaro_Winklers = []
     for index, row in dataset.iterrows():
+        print(row['TOKEN'] + ' ' + row['POS'])
         if (row['ID'] > current_id):
             prediction = ''
             prediction_submitted = False
             current_id = row['ID']
         if (prediction_submitted):
             if (modus == 'prediction'):
-                row['LEMMA'] == prediction
+                row['LEMMA'] = prediction
             else:
                 if (prediction == row['LEMMA'].strip()):
                     accurate_answers = accurate_answers + 1
@@ -374,6 +375,7 @@ def model_prediction(dataset, join, modus, dim, optim, loss, activation, name, l
             if partOfSpeech == 'FRAG':
                 if (modus == 'prediction'):
                     row['LEMMA'] = '==='
+                    print(row['TOKEN'] + ' ' + row['LEMMA'])
                 else:                    
                     predicted = '==='
                     if (predicted == row['LEMMA'].strip()):
@@ -394,6 +396,7 @@ def model_prediction(dataset, join, modus, dim, optim, loss, activation, name, l
             elif ((partOfSpeech == 'PUNCT') or (partOfSpeech == 'DIGIT')):
                 if (modus == 'prediction'):
                     row['LEMMA'] = row['TOKEN']
+                    print(row['TOKEN'] + ' ' + row['LEMMA'])
                 else:
                     predicted = row['TOKEN']
                     if (predicted == row['LEMMA'].strip()):
