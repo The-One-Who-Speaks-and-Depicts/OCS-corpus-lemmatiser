@@ -25,7 +25,7 @@ def main():
 
 	st.sidebar.subheader("About App")
 	st.sidebar.text("OCS Lemmatiser")
-	st.sidebar.info("Cudos to the Streamlit Team & Jesse E.Agbe(JCharis)")
+	st.sidebar.info("Cudos to the Streamlit Team & Jesse E.Agbe (JCharis)")
 	
 
 if __name__ == '__main__':
