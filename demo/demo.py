@@ -64,7 +64,7 @@ def main():
     for index, row in load_train_dataset(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'Model', 'lemmatized_' + name + '.txt'), join, 0, 0).iterrows():
       input_words.append(row['WORD'].strip())
       target_words.append(row['LEMMA'].strip())
-    for index, row in load_train_dataset(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'Model', 'train_' + name + '.txt'), join, 0, lemma_split).iterrows():
+    for index, row in load_train_dataset(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'Model', 'train_' + name + '.txt'), join, 0, 1).iterrows():
       input_text = row['WORD']
       target_text = row['LEMMA']
       target_text = '\t' + target_text + '\n'
@@ -106,7 +106,7 @@ def main():
     decoder_lstm = LSTM(latent_dim, return_sequences=True, return_state=True)
     decoder_outputs, _, _ = decoder_lstm(decoder_inputs,
                                          initial_state=encoder_states)
-    decoder_dense = Dense(num_decoder_tokens, activation=activation)
+    decoder_dense = Dense(num_decoder_tokens, activation='softmax')
     decoder_outputs = decoder_dense(decoder_outputs)
     model = Model([encoder_inputs, decoder_inputs], decoder_outputs)
     model.compile(optimizer='rmsprop', loss='categorical_crossentropy')    
@@ -144,26 +144,26 @@ def main():
     	""")
 	
     #Lemmatisation
-    token = st.text_area("Enter token to analyze...", "Type Here...")
-    partOfSpeech = st.text_area("Enter supposed PoS of token...", "Type Here...")
+    token = st.text_area("Enter token to analyze...", "=====")
+    partOfSpeech = st.text_area("Enter supposed PoS of token...", "FRAG")
     if partOfSpeech == 'FRAG':
 	    st.write('===')
     elif ((partOfSpeech == 'PUNCT') or (partOfSpeech == 'DIGIT')):
         st.write(token)
-    elif ((token in input_words) or ((token + pos) in input_words)):                
+    elif ((token in input_words) or ((token + partOfSpeech) in input_words)):                
         processed_token = ''
         if (join == 0):
             processed_token = token
         else:
-            processed_token = token + pos
-            try:
-                st.write(target_words[input_words.index(token)].strip())
-            except ValueError:
-                st.write(target_words[input_words.index(row['TOKEN'])].strip())   
+            processed_token = token + partOfSpeech
+        try:
+            st.write(target_words[input_words.index(processed_token)].strip())
+        except ValueError:
+            st.write(target_words[input_words.index(processed_token)].strip())   
     else:
         try:
             predictions = []
-            for n_gram in test_split(token, pos, 0, 0): 
+            for n_gram in test_split(token, partOfSpeech, 0, 0): 
                 test_sentence_tokenized = np.zeros(
                             (1, max_encoder_seq_length, num_encoder_tokens), dtype='float32')
                 transferred_token = n_gram
@@ -190,32 +190,28 @@ def main():
                         output_tokens, h, c = decoder_model.predict(
                                 [target_seq] + states_value)
                             
-                    # sample a token and add the corresponding character to the 
-                    # decoded sequence
-                    sampled_token_index = np.argmax(output_tokens[0, -1, :])
-                    sampled_char = reverse_target_char_index[sampled_token_index]
-                    decoded_sentence += sampled_char
-                            
-                    # check for the exit condition: either hitting max length
-                    # or predicting the 'stop' character
-                    if (sampled_char == '\n' or 
-                                  len(decoded_sentence) > max_decoder_seq_length):
-                        stop_condition = True
-                              
-                    # update the target sequence (length 1).
-                    target_seq = np.zeros((1, 1, num_decoder_tokens))
-                    target_seq[0, 0, sampled_token_index] = 1.
-                            
-                    # update states
-                    states_value = [h, c]
-                predicted = decoded_sentence.strip()
-                predictions.append(predicted)
-            final_prediction = ''
-            if (len(predictions) == 1):
-                final_prediction = predictions[0]
-            st.write(re.sub(r'#', "", final_prediction))
+                        # sample a token and add the corresponding character to the 
+                        # decoded sequence
+                        sampled_token_index = np.argmax(output_tokens[0, -1, :])
+                        sampled_char = reverse_target_char_index[sampled_token_index]
+                        decoded_sentence += sampled_char
+                                
+                        # check for the exit condition: either hitting max length
+                        # or predicting the 'stop' character
+                        if (sampled_char == '\n' or 
+                                      len(decoded_sentence) > max_decoder_seq_length):
+                            stop_condition = True
+                                  
+                        # update the target sequence (length 1).
+                        target_seq = np.zeros((1, 1, num_decoder_tokens))
+                        target_seq[0, 0, sampled_token_index] = 1.
+                                
+                        # update states
+                        states_value = [h, c]
+                    st.write(decoded_sentence)
         except Exception:
             st.write('Error!')
+    
 
     st.sidebar.subheader("About App")
     st.sidebar.text("OCS Lemmatiser")
