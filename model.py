@@ -166,6 +166,7 @@ def model_prediction(dataset, join, modus, dim, optim, loss, activation, name, l
     Levenshteins = []
     damerau_Levenshteins = []
     jaro_Winklers = []
+    print(dataset.shape)
     for index, row in dataset.iterrows():
         if (row['ID'] > current_id):
             prediction = ''
@@ -392,14 +393,7 @@ def model_prediction(dataset, join, modus, dim, optim, loss, activation, name, l
                                 total_answers = total_answers + 1
                         prediction_submitted = True                        
                 except Exception:
-                    traceback.print_exc()
-            if ((modus == 'prediction') and (prediction_submitted == True)):
-                with open(folder + '\\result.txt', 'a', encoding='utf-8') as out:
-                    out.write(row['TOKEN'].strip() + ' ' + row['LEMMA'] + '\n')
-        else:
-            if (modus == 'prediction'):
-                with open(folder + '\\result.txt', 'a', encoding='utf-8') as out:
-                    out.write(row['TOKEN'].strip() + ' ' + row['LEMMA'] + '\n')    
+                    traceback.print_exc()          
     if (modus == 'accuracy'):
         print('Accuracy score: ' + str(accurate_answers/total_answers*100) + '%')
         error_datasets = []
@@ -425,3 +419,4 @@ def model_prediction(dataset, join, modus, dim, optim, loss, activation, name, l
             print('Normalized average Jaro-Winkler distance: ' + str(sum(cleared_jaro_winklers)/len(cleared_jaro_winklers)))
         errors = pd.concat(error_datasets)
         errors.to_csv(folder + '\\errors_' + name + '.csv', index = False, encoding='utf-8')
+    return dataset

@@ -3,6 +3,7 @@ import argparse
 from dataset_loading import load_conllu_dataset, load_json_dataset
 from model import model_training, model_prediction
 import random as rnd
+import json
 
 def main(args):
     grams = int(args.grams)
@@ -17,7 +18,20 @@ def main(args):
     elif (args.modus == 'prediction'):        
         test_dataset = load_json_dataset(args.data, args.join)
         rnd.seed(75)
-        model_prediction(test_dataset, args.join, args.modus, args.dim, args.optimizer, args.loss, args.activation, args.name, lemma_split, args.forming_priority, grams)
+        result = model_prediction(test_dataset, args.join, args.modus, args.dim, args.optimizer, args.loss, args.activation, args.name, lemma_split, args.forming_priority, grams, args.folder)
+        print(result.shape)
+        with open(args.data, encoding='utf8') as f:
+            d = json.load(f)    
+        for t in d["texts"]:
+            for c in t["clauses"]:
+                for r in c["realizations"]:
+                    for index, row in result.iterrows():
+                        id, lemma = row['DB_ID'], row['LEMMA']
+                        textID, clauseID, realizationID = id.split('_')
+                        if ((r["textID"] == textID) and (r["clauseID"] == clauseID) and (r["realizationID"] == realizationID)):                                
+                            r["realizationFields"].append({"Lemma":[lemma]})        
+        with open(args.data, 'w', encoding='utf8') as f:
+            json.dump(d, f, ensure_ascii=False)  
     elif (args.modus == 'accuracy'):
         validation_dataset = load_conllu_dataset(args.data, args.join, args.name, grams, lemma_split, args.modus, stemming, args.folder)
         rnd.seed(75)

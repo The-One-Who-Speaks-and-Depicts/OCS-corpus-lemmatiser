@@ -19,13 +19,20 @@ def load_train_dataset(datafile, join, grams, lemma_split):
 def load_json_dataset(datafile, join):
     with open(datafile, encoding='utf-8') as f:
         d = json.load(f)
-    dataset = pd.DataFrame(columns=['ID', 'TOKEN', 'WORD', 'POS', 'LEMMA'])
+    dataset = pd.DataFrame(columns=['ID', 'TOKEN', 'WORD', 'POS', 'LEMMA', 'DB_ID'])
     counter = 0
     for t in d["texts"]:
         for c in t["clauses"]:
             for r in c["realizations"]:
-                dataset.loc[counter] = [counter, r["lexemeTwo"], r["lexemeTwo"], r["realizationFields"][0]["PoS"][0]["name"], "UNK"]
-                counter = counter + 1
+                PoS = ""
+                for f in r["realizationFields"]:
+                    try:
+                        PoS = f["PoS"][0]
+                        dataset.loc[counter] = [counter, r["lexemeTwo"], r["lexemeTwo"], PoS, "UNK", r["textID"] + "_" + r["clauseID"] + "_" + r["realizationID"]]
+                        counter = counter + 1
+                        break
+                    except:
+                        pass                                    
     return dataset
 
 def load_conllu_dataset(datafile, join, name, grams, lemma_split, modus, stemming, folder):
