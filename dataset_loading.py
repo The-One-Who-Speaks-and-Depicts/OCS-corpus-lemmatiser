@@ -28,7 +28,7 @@ def load_json_dataset(datafile, join):
                 counter = counter + 1
     return dataset
 
-def load_conllu_dataset(datafile, join, name, grams, lemma_split, modus, stemming):
+def load_conllu_dataset(datafile, join, name, grams, lemma_split, modus, stemming, folder):
     join = int(join)
     with open(datafile, encoding='utf-8') as inp:
         strings = inp.readlines()
@@ -36,7 +36,7 @@ def load_conllu_dataset(datafile, join, name, grams, lemma_split, modus, stemmin
     counter = 0
     word_counter = 0
     if (modus == 'training'):
-        with open(args.folder + '\\lemmatized_' + name + '.txt', 'a', encoding='utf-8') as out_dictionary:
+        with open(folder + '\\lemmatized_' + name + '.txt', 'a', encoding='utf-8') as out_dictionary:
             for s in strings:
                 if (s[0] != "#" and s.strip()):
                     split_string = s.split('\t')

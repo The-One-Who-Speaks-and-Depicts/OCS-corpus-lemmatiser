@@ -81,7 +81,7 @@ def model_training(dataset, folder, epochs, batch, dim, optim, loss, activation,
     model.save(folder + '\\' + model_name + '.h5')   
          
 
-def model_prediction(dataset, join, modus, dim, optim, loss, activation, name, lemma_split, priority, grams):
+def model_prediction(dataset, join, modus, dim, optim, loss, activation, name, lemma_split, priority, grams, folder):
     input_texts = []
     target_texts = []
     input_characters = set()
@@ -167,7 +167,6 @@ def model_prediction(dataset, join, modus, dim, optim, loss, activation, name, l
     damerau_Levenshteins = []
     jaro_Winklers = []
     for index, row in dataset.iterrows():
-        print(row['TOKEN'] + ' ' + row['POS'])
         if (row['ID'] > current_id):
             prediction = ''
             prediction_submitted = False
@@ -196,7 +195,6 @@ def model_prediction(dataset, join, modus, dim, optim, loss, activation, name, l
             if partOfSpeech == 'FRAG':
                 if (modus == 'prediction'):
                     row['LEMMA'] = '==='
-                    print(row['TOKEN'] + ' ' + row['LEMMA'])
                 else:                    
                     predicted = '==='
                     if (predicted == row['LEMMA'].strip()):
@@ -217,7 +215,6 @@ def model_prediction(dataset, join, modus, dim, optim, loss, activation, name, l
             elif ((partOfSpeech == 'PUNCT') or (partOfSpeech == 'DIGIT')):
                 if (modus == 'prediction'):
                     row['LEMMA'] = row['TOKEN']
-                    print(row['TOKEN'] + ' ' + row['LEMMA'])
                 else:
                     predicted = row['TOKEN']
                     if (predicted == row['LEMMA'].strip()):

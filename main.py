@@ -12,16 +12,16 @@ def main(args):
     if (early_stopping == -1):
         early_stopping = int(args.epochs)        
     if (args.modus == 'training'):
-        train_dataset = load_conllu_dataset(args.data, args.join, args.name, grams, lemma_split, args.modus, stemming)
+        train_dataset = load_conllu_dataset(args.data, args.join, args.name, grams, lemma_split, args.modus, stemming, args.folder)
         model_training(train_dataset, args.folder, args.epochs, args.batch, args.dim, args.optimizer, args.loss, args.activation, args.name, early_stopping)
     elif (args.modus == 'prediction'):        
         test_dataset = load_json_dataset(args.data, args.join)
         rnd.seed(75)
         model_prediction(test_dataset, args.join, args.modus, args.dim, args.optimizer, args.loss, args.activation, args.name, lemma_split, args.forming_priority, grams)
     elif (args.modus == 'accuracy'):
-        validation_dataset = load_conllu_dataset(args.data, args.join, args.name, grams, lemma_split, args.modus, stemming)
+        validation_dataset = load_conllu_dataset(args.data, args.join, args.name, grams, lemma_split, args.modus, stemming, args.folder)
         rnd.seed(75)
-        model_prediction(validation_dataset, args.join, args.modus, args.dim, args.optimizer, args.loss, args.activation, args.name, lemma_split, args.forming_priority, grams)
+        model_prediction(validation_dataset, args.join, args.modus, args.dim, args.optimizer, args.loss, args.activation, args.name, lemma_split, args.forming_priority, grams, args.folder)
         
             
 
@@ -30,7 +30,7 @@ if __name__ == '__main__':
     parser.add_argument('--data')
     parser.add_argument('--folder', default=os.path.dirname(os.path.realpath(__file__)))
     parser.add_argument('--epochs', default='40')
-    parser.add_argument('--batch', default='128')
+    parser.add_argument('--batch', default='256')
     parser.add_argument('--dim', default='256')
     parser.add_argument('--join', default='0')
     parser.add_argument('--modus', default='training')
@@ -44,4 +44,4 @@ if __name__ == '__main__':
     parser.add_argument('--forming_priority', default='forward')
     parser.add_argument('--early_stopping', default='-1')
     args = parser.parse_args()
-    #main(args)
+    main(args)
