@@ -24,11 +24,17 @@ def main(args):
         for t in d["texts"]:
             for c in t["clauses"]:
                 for r in c["realizations"]:
-                    for index, row in result.iterrows():
-                        id, lemma = row['DB_ID'], row['LEMMA']
-                        textID, clauseID, realizationID = id.split('_')
-                        if ((r["textID"] == textID) and (r["clauseID"] == clauseID) and (r["realizationID"] == realizationID)):                                
-                            r["realizationFields"].append({"Lemma":[lemma]})        
+                    field_exists = False
+                    for f in r["realizationFields"]:
+                        if "Lemma" in f.keys():
+                            field_exists = True
+                            break
+                    if not field_exists:
+                        for index, row in result.iterrows():
+                            id, lemma = row['DB_ID'], row['LEMMA']
+                            textID, clauseID, realizationID = id.split('_')
+                            if ((r["textID"] == textID) and (r["clauseID"] == clauseID) and (r["realizationID"] == realizationID)):                                
+                                r["realizationFields"].append({"Lemma":[lemma]})        
         with open(args.data, 'w', encoding='utf8') as f:
             json.dump(d, f, ensure_ascii=False)  
     elif (args.modus == 'accuracy'):
