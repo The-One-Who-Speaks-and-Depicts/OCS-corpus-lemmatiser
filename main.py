@@ -19,7 +19,6 @@ def main(args):
         test_dataset = load_json_dataset(args.data, args.join)
         rnd.seed(75)
         result = model_prediction(test_dataset, args.join, args.modus, args.dim, args.optimizer, args.loss, args.activation, args.name, lemma_split, args.forming_priority, grams, args.folder)
-        print(result.shape)
         with open(args.data, encoding='utf8') as f:
             d = json.load(f)    
         for t in d["texts"]:

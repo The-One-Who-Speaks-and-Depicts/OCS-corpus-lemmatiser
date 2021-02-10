@@ -166,7 +166,6 @@ def model_prediction(dataset, join, modus, dim, optim, loss, activation, name, l
     Levenshteins = []
     damerau_Levenshteins = []
     jaro_Winklers = []
-    print(dataset.shape)
     for index, row in dataset.iterrows():
         if (row['ID'] > current_id):
             prediction = ''
@@ -341,11 +340,11 @@ def model_prediction(dataset, join, modus, dim, optim, loss, activation, name, l
                                 for pred in predictions:
                                     final_prediction += pred
                                     final_prediction += '%'
-                            row['LEMMA'] = re.sub(r'#', "", final_prediction)
+                            row['LEMMA'] = re.sub(r'#|%', "", final_prediction)
                         else:
                             if (lemma_split == 0):
                                 for pred in predictions:
-                                    pred = re.sub(r'#', "", pred)
+                                    pred = re.sub(r'#|%', "", pred)
                                     if (pred == row['LEMMA'].strip()):
                                         accurate_answers = accurate_answers + 1
                                     Levenshteins.append([row['LEMMA'].strip(), pred, Levenshtein.distance(row['LEMMA'].strip(), pred)])
@@ -377,7 +376,7 @@ def model_prediction(dataset, join, modus, dim, optim, loss, activation, name, l
                                                 continue
                                             else:
                                                 final_prediction += predictions[i][len(predictions[i]) - 1]
-                                pred = re.sub(r'#', "", final_prediction)
+                                pred = re.sub(r'#|%', "", final_prediction)
                                 if (pred == row['LEMMA'].strip()):
                                         accurate_answers = accurate_answers + 1
                                 Levenshteins.append([row['LEMMA'].strip(), pred, Levenshtein.distance(row['LEMMA'].strip(), pred)])
