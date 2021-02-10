@@ -58,7 +58,7 @@ if __name__ == '__main__':
     parser.add_argument('--activation', default='softmax')
     parser.add_argument('--grams', default='0')
     parser.add_argument('--name', default='seq2seq')
-    parser.add_argument('--lemma_split', default='0')
+    parser.add_argument('--lemma_split', default='1')
     parser.add_argument('--stemming', default='0')
     parser.add_argument('--forming_priority', default='forward')
     parser.add_argument('--early_stopping', default='-1')
