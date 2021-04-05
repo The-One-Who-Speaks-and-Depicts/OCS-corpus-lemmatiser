@@ -27,7 +27,7 @@ def load_json_dataset(datafile, join):
                 PoS = ""
                 for f in r["realizationFields"]:
                     try:
-                        PoS = f["PoS"][0]
+                        PoS = f["PoS"][0]["name"]
                         dataset.loc[counter] = [counter, r["lexemeTwo"], r["lexemeTwo"], PoS, "UNK", r["textID"] + "_" + r["clauseID"] + "_" + r["realizationID"]]
                         counter = counter + 1
                         break

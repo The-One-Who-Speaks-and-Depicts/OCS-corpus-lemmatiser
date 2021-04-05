@@ -2,7 +2,7 @@
 import re
 import numpy as np
 import keras, tensorflow
-from keras.models import Model
+from keras.models import Model, load_model
 from keras.layers import Input, LSTM, Dense
 import os
 import random as rnd
@@ -135,10 +135,8 @@ def model_prediction(dataset, join, modus, dim, optim, loss, activation, name, l
                                          initial_state=encoder_states)
     decoder_dense = Dense(num_decoder_tokens, activation=activation)
     decoder_outputs = decoder_dense(decoder_outputs)
-    model = Model([encoder_inputs, decoder_inputs], decoder_outputs)
-    model.compile(optimizer=optim, loss=loss)    
-    model.load_weights(folder + '\\' + name + '.h5')
-
+    model = load_model(folder + '\\' + name + '.h5')
+    print('model loaded!')
     encoder_model = Model(encoder_inputs, encoder_states)
 
     decoder_state_input_h = Input(shape=(latent_dim,))
@@ -166,7 +164,9 @@ def model_prediction(dataset, join, modus, dim, optim, loss, activation, name, l
     Levenshteins = []
     damerau_Levenshteins = []
     jaro_Winklers = []
+    print('Starting prediction...')
     for index, row in dataset.iterrows():
+        print('Unit ' + str(index))
         if (row['ID'] > current_id):
             prediction = ''
             prediction_submitted = False
@@ -390,7 +390,7 @@ def model_prediction(dataset, join, modus, dim, optim, loss, activation, name, l
                                 except JaroDistanceException:
                                     jaro_Winklers.append([row['LEMMA'].strip(), pred, 0])
                                 total_answers = total_answers + 1
-                        prediction_submitted = True                        
+                        prediction_submitted = True
                 except Exception:
                     traceback.print_exc()          
     if (modus == 'accuracy'):

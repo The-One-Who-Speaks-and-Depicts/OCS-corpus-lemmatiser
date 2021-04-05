@@ -34,7 +34,7 @@ def main(args):
                             id, lemma = row['DB_ID'], row['LEMMA']
                             textID, clauseID, realizationID = id.split('_')
                             if ((r["textID"] == textID) and (r["clauseID"] == clauseID) and (r["realizationID"] == realizationID)):                                
-                                r["realizationFields"].append({"Lemma":[lemma]})        
+                                r["realizationFields"].append({"Lemma":[{"name":lemma}]})        
         with open(args.data, 'w', encoding='utf8') as f:
             json.dump(d, f, ensure_ascii=False)  
     elif (args.modus == 'accuracy'):
