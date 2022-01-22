@@ -136,7 +136,6 @@ def model_prediction(dataset, join, modus, dim, optim, loss, activation, name, l
     decoder_dense = Dense(num_decoder_tokens, activation=activation)
     decoder_outputs = decoder_dense(decoder_outputs)
     model = load_model(folder + '\\' + name + '.h5')
-    print('model loaded!')
     encoder_model = Model(encoder_inputs, encoder_states)
 
     decoder_state_input_h = Input(shape=(latent_dim,))
@@ -164,9 +163,7 @@ def model_prediction(dataset, join, modus, dim, optim, loss, activation, name, l
     Levenshteins = []
     damerau_Levenshteins = []
     jaro_Winklers = []
-    print('Starting prediction...')
     for index, row in dataset.iterrows():
-        print('Unit ' + str(index))
         if (row['ID'] > current_id):
             prediction = ''
             prediction_submitted = False

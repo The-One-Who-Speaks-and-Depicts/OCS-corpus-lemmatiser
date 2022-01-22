@@ -33,8 +33,12 @@ def main(args):
                         for index, row in result.iterrows():
                             id, lemma = row['DB_ID'], row['LEMMA']
                             textID, clauseID, realizationID = id.split('_')
-                            if ((r["textID"] == textID) and (r["clauseID"] == clauseID) and (r["realizationID"] == realizationID)):                                
-                                r["realizationFields"].append({"Lemma":[{"name":lemma}]})        
+                            if ((r["textID"] == textID) and (r["clauseID"] == clauseID) and (r["realizationID"] == realizationID)):
+                                for f in r["realizationFields"]:
+                                    if "PoS" in f.keys():
+                                        r["realizationFields"].append({"PoS":[{"name":f["PoS"]}], "Lemma":[{"name": r["lexemeTwo"]}]});
+                                        f["Lemma"] = [{"name":lemma}]
+                                        break
         with open(args.data, 'w', encoding='utf8') as f:
             json.dump(d, f, ensure_ascii=False)  
     elif (args.modus == 'accuracy'):
