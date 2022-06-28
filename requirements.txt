@@ -7,7 +7,7 @@ Keras == 2.4.3
 fuzzywuzzy == 0.18.0
 
 
-numpy == 1.21.0
+numpy == 1.22.0
 
 pandas == 0.24.2
 
