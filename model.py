@@ -88,10 +88,10 @@ def model_prediction(dataset, join, modus, dim, optim, loss, activation, name, l
     target_characters = set()
     input_words = []
     target_words = []
-    for index, row in load_train_dataset(folder + '\\lemmatized_' + name + '.txt', join, 0, 0).iterrows():
+    for index, row in load_train_dataset(os.path.join(folder, 'lemmatized_' + name + '.txt'), join, 0, 0).iterrows():
       input_words.append(row['WORD'].strip())
       target_words.append(row['LEMMA'].strip())
-    for index, row in load_train_dataset(folder + '\\train_' + name + '.txt', join, 0, lemma_split).iterrows():
+    for index, row in load_train_dataset(os.path.join(folder, 'train_' + name + '.txt'), join, 0, lemma_split).iterrows():
       input_text = row['WORD']
       target_text = row['LEMMA']
       target_text = '\t' + target_text + '\n'
@@ -135,7 +135,7 @@ def model_prediction(dataset, join, modus, dim, optim, loss, activation, name, l
                                          initial_state=encoder_states)
     decoder_dense = Dense(num_decoder_tokens, activation=activation)
     decoder_outputs = decoder_dense(decoder_outputs)
-    model = load_model(folder + '\\' + name + '.h5')
+    model = load_model(os.path.join(folder, name + '.keras'))
     encoder_model = Model(encoder_inputs, encoder_states)
 
     decoder_state_input_h = Input(shape=(latent_dim,))
@@ -414,5 +414,5 @@ def model_prediction(dataset, join, modus, dim, optim, loss, activation, name, l
             cleared_jaro_winklers = [i for i in raw_jaro_winklers if i > 0 and i < 1]
             print('Normalized average Jaro-Winkler distance: ' + str(sum(cleared_jaro_winklers)/len(cleared_jaro_winklers)))
         errors = pd.concat(error_datasets)
-        errors.to_csv(folder + '\\errors_' + name + '.csv', index = False, encoding='utf-8')
+        errors.to_csv(os.path.join(folder, 'errors_' + name + '.csv'), index = False, encoding='utf-8')
     return dataset
