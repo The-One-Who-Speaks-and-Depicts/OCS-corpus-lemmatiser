@@ -21,7 +21,7 @@ def model_training(dataset, folder, epochs, batch, dim, optim, loss, activation,
     target_texts = []
     input_characters = set()
     target_characters = set()
-    with open(folder + '\\train_' + model_name + '.txt', 'a', encoding='utf-8') as out:
+    with open(os.path.join(folder, 'train_' + model_name + '.txt'), 'a', encoding='utf-8') as out:
         for index, row in dataset.iterrows():
           out.write(row['WORD'].strip() + ' ' + row['LEMMA'].strip() + '\n')
           input_text = row['WORD']
@@ -78,7 +78,7 @@ def model_training(dataset, folder, epochs, batch, dim, optim, loss, activation,
           epochs=epochs,
           validation_split=0.2,
           callbacks=[callback])
-    model.save(folder + '\\' + model_name + '.h5')   
+    model.save(os.path.join(folder, model_name + '.keras'))   
          
 
 def model_prediction(dataset, join, modus, dim, optim, loss, activation, name, lemma_split, priority, grams, folder):

@@ -43,7 +43,7 @@ def load_conllu_dataset(datafile, join, name, grams, lemma_split, modus, stemmin
     counter = 0
     word_counter = 0
     if (modus == 'training'):
-        with open(folder + '\\lemmatized_' + name + '.txt', 'a', encoding='utf-8') as out_dictionary:
+        with open(os.path.join(folder, 'lemmatized_' + name + '.txt'), 'a', encoding='utf-8') as out_dictionary:
             for s in strings:
                 if (s[0] != "#" and s.strip()):
                     split_string = s.split('\t')
