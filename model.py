@@ -164,6 +164,7 @@ def model_prediction(dataset, join, modus, dim, optim, loss, activation, name, l
     damerau_Levenshteins = []
     jaro_Winklers = []
     for index, row in dataset.iterrows():
+        print(f'Iteration {index} from {dataset.shape[0]}')          
         if (row['ID'] > current_id):
             prediction = ''
             prediction_submitted = False
@@ -389,7 +390,7 @@ def model_prediction(dataset, join, modus, dim, optim, loss, activation, name, l
                                 total_answers = total_answers + 1
                         prediction_submitted = True
                 except Exception:
-                    traceback.print_exc()          
+                    traceback.print_exc()
     if (modus == 'accuracy'):
         print('Accuracy score: ' + str(accurate_answers/total_answers*100) + '%')
         error_datasets = []
